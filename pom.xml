@@ -5,10 +5,15 @@
     <artifactId>troll</artifactId>
     <packaging>jar</packaging>
     <version>1.0</version>
-    <name>fab</name>
+    <name>troll</name>
     <url>http://troll.mediolabs.com</url>
 
     <dependencies>
+        <dependency>
+            <groupId>baggage</groupId>
+            <artifactId>baggage</artifactId>
+            <version>1.0</version>
+        </dependency>
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>

@@ -1,24 +1,26 @@
 package troll;
 
-import java.util.Map;
-import java.util.TreeMap;
+import clutter.Bag;
+import clutter.SetBag;
 
-// TODO: multiple inputs summed for each slot
-abstract class Op {
-    private Map<String, Op> inputsBySlot;
+import java.util.Collection;
+
+public abstract class Op {
+    private Bag<String, Op> inputsBySlot;
     private String name;
-    private float[] emptyBuffer;
+    private float[] buffer;
 
     protected Op(String name) {
         this.name = name;
-        this.inputsBySlot = new TreeMap<String, Op>();
-        emptyBuffer = new float[0];
+        this.inputsBySlot = new SetBag<String, Op>();
+        buffer = new float[0];
     }
 
     public abstract float[] execute(Configuration configuration, long currentSample);
 
-    public final void plug(String slot, Op op) {
+    public final Op plug(String slot, Op op) {
         inputsBySlot.put(slot, op);
+        return this;
     }
 
     public final void unplug(String slot, Op op) {
@@ -26,15 +28,22 @@ abstract class Op {
     }
 
     protected final float[] executeSlot(Configuration configuration, String slotName, long currentSample) {
-        Op op = inputsBySlot.get(slotName);
-        if (op == null) {
-            if (emptyBuffer.length != configuration.getSampleSize())
-                emptyBuffer = new float[configuration.getSampleSize()];
+        if (buffer.length != configuration.getSampleSize())
+            buffer = new float[configuration.getSampleSize()];
 
-            return emptyBuffer;
+        for (int i = 0; i < buffer.length; i++)
+            buffer[i] = 0;
+
+        Collection<Op> ops = inputsBySlot.getValues(slotName);
+
+        for (Op op : ops) {
+            float[] result = op.execute(configuration, currentSample);
+            for (int i = 0; i < result.length; i++) {
+                buffer[i] += result[i];
+            }
         }
 
-        return op.execute(configuration, currentSample);
+        return buffer;
     }
 
     @Override

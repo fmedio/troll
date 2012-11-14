@@ -22,7 +22,7 @@ public class Oscillator extends Op {
 
         for (int i = 0; i < sampleSize; i++) {
             double angle = (double)((long)i + currentSample)/ ((double) samplingRate / (double)frequency[i]) * 2d * Math.PI;
-            float value = (float) (Math.sin(angle) * Float.MAX_VALUE / 3d);
+            float value = (float) (Math.sin(angle) * Float.MAX_VALUE);
             buffer[i] = value;
         }
         return buffer;

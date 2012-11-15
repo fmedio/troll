@@ -1,8 +1,10 @@
 package troll;
 
-public class Constant extends Op {
+public class Constant extends Operator {
     private float value;
     private float[] buffer;
+
+    public static final String OUTPUT = "output";
 
     public Constant(String name, float value) {
         super(name);
@@ -11,7 +13,7 @@ public class Constant extends Op {
     }
 
     @Override
-    public float[] execute(Configuration configuration, long currentSample) {
+    public void execute(Configuration configuration, long currentSample) {
         if (buffer.length != configuration.getSampleSize())
             buffer = new float[configuration.getSampleSize()];
 
@@ -19,7 +21,7 @@ public class Constant extends Op {
             buffer[i] = value;
         }
 
-        return buffer;
+        publish(OUTPUT, buffer);
     }
 }
 

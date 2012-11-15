@@ -5,9 +5,9 @@ import javax.sound.sampled.AudioSystem;
 import javax.sound.sampled.LineUnavailableException;
 import javax.sound.sampled.SourceDataLine;
 
-class Dac extends Op {
+class Dac extends Operator {
     public static final String INPUT = "input";
-    private final byte[] output;
+    private byte[] output;
     private final SourceDataLine sdl;
 
     double ratio = (double)Short.MAX_VALUE / (double)Float.MAX_VALUE;
@@ -20,14 +20,17 @@ class Dac extends Op {
         sdl = AudioSystem.getSourceDataLine(af);
         sdl.open(af);
         sdl.start();
-        output = new byte[256];
+        output = new byte[0];
     }
 
 
     @Override
-    public float[] execute(Configuration config, long currentSample) {
+    public void execute(Configuration config, long currentSample) {
+        if (output.length != config.getSampleSize() * 2)
+            output = new byte[config.getSampleSize() * 2];
+
         int sampleSize = config.getSampleSize();
-        float[] input = executeSlot(config, INPUT, currentSample);
+        float[] input = readInput(config, currentSample, INPUT);
 
         for (int j = 0; j < sampleSize; j++) {
             short value = (short)(input[j] * ratio);
@@ -36,7 +39,6 @@ class Dac extends Op {
         }
 
         sdl.write(output, 0, output.length);
-        return input;
     }
 
     @Override

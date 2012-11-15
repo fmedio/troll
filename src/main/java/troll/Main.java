@@ -6,16 +6,23 @@ public class Main {
 
     public static void main(String[] args) throws Exception {
         long currentSample = 0;
-        Configuration configuration = new Configuration(128, 44100);
+        Configuration configuration = new Configuration(512, 44100);
 
-        Op osc1 = new Oscillator("OSC1").plug(Oscillator.FREQUENCY, new Constant("440", 880));
-        Op osc2 = new Oscillator("OSC2").plug(Oscillator.FREQUENCY, new Constant("220", 250));
-        Op osc3 = new Oscillator("OSC3").plug(Oscillator.FREQUENCY, new Constant("110", 110));
+        Constant first = new Constant("first", 110);
+        Constant second = new Constant("second", 440);
+        Constant third = new Constant("third", 880);
+        Constant fourth = new Constant("fourth", 1760);
 
-        Op dac = new Dac()
-                .plug(Dac.INPUT, osc1)
-                .plug(Dac.INPUT, osc2)
-                .plug(Dac.INPUT, osc3);
+        Operator osc1 = new Oscillator("OSC1").connect(first, Constant.OUTPUT, Oscillator.FREQUENCY);
+        Operator osc2 = new Oscillator("OSC2").connect(second, Constant.OUTPUT, Oscillator.FREQUENCY);
+        Operator osc3 = new Oscillator("OSC3").connect(third, Constant.OUTPUT, Oscillator.FREQUENCY);
+        Operator osc4 = new Oscillator("OSC4").connect(fourth, Constant.OUTPUT, Oscillator.FREQUENCY);
+
+        Operator dac = new Dac()
+                .connect(osc1, Oscillator.OUTPUT, Dac.INPUT)
+                .connect(osc2, Oscillator.OUTPUT, Dac.INPUT)
+                .connect(osc3, Oscillator.OUTPUT, Dac.INPUT)
+                .connect(osc4, Oscillator.OUTPUT, Dac.INPUT);
 
         for (int i = 0; i < SAMPLE_COUNT; i++) {
             dac.execute(configuration, currentSample);

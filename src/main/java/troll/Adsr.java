@@ -53,11 +53,12 @@ public class Adsr extends Operator {
             long samplesSinceStart = sample - lastGateStart;
             if (sample < lastGateStart + attackDuration) {
                 double ratio = samplesSinceStart / attackDuration;
-                return (float) (Float.MAX_VALUE * ratio);
+                return (float) ((Float.MAX_VALUE) * ratio);
             } else if (sample < lastGateStart + attackDuration + decayDuration) {
                 double samplesSinceDecayStart = samplesSinceStart - attackDuration;
-                double ratio = 1d - (double) (sustain / Float.MAX_VALUE) * (samplesSinceDecayStart / decayDuration);
-                return (float) (Float.MAX_VALUE * ratio);
+                double step = Float.MAX_VALUE - sustain;
+                double ratio = samplesSinceDecayStart / decayDuration;
+                return (float) (Float.MAX_VALUE - (ratio * step));
             } else {
                 return sustain;
             }

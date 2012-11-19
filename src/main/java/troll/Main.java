@@ -10,10 +10,10 @@ public class Main {
 
         OneNoteKeyboard keyboard = new OneNoteKeyboard("foo");
         Adsr adsr = new Adsr("adsr");
-        adsr.setAttackMs(1000);
-        adsr.setDecayMs(1000);
-        adsr.setSustain(Float.MAX_VALUE / 4f);
-        adsr.setReleaseMs(1000);
+        adsr.setAttackMs(10);
+        adsr.setDecayMs(500);
+        adsr.setSustain(Float.MIN_VALUE / 16);
+        adsr.setReleaseMs(100);
 
         Operator osc1 = new Oscillator("OSC1");
 

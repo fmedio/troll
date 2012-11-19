@@ -1,17 +1,25 @@
 package troll;
 
+import javax.swing.*;
+
 public class OneNoteKeyboard extends Operator {
     public static final String FREQUENCY = "frequency";
     public static final String GATE = "gate";
 
     private float[] freq;
     private float[] gate;
+    private final JButton button;
 
 
     protected OneNoteKeyboard(String name) {
         super(name);
         freq = new float[0];
         gate = new float[0];
+        JFrame frame = new JFrame("foo");
+        button = new JButton("bang");
+        frame.getContentPane().add(button);
+        frame.setSize(300, 300);
+        frame.setVisible(true);
     }
 
     @Override
@@ -25,8 +33,14 @@ public class OneNoteKeyboard extends Operator {
         for (int i = 0; i < freq.length; i++)
             freq[i] = 220f;
 
-        for (int i = 0; i < gate.length; i++) {
-            gate[i] = Float.MAX_VALUE;
+        if (button.getModel().isPressed()) {
+            for (int i = 0; i < gate.length; i++) {
+                gate[i] = Float.MAX_VALUE;
+            }
+        } else {
+            for (int i = 0; i < gate.length; i++) {
+                gate[i] = 0;
+            }
         }
 
         publish(FREQUENCY, freq);

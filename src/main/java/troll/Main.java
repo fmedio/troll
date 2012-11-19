@@ -7,12 +7,13 @@ public class Main {
     public static void main(String[] args) throws Exception {
         long currentSample = 0;
         Configuration configuration = new Configuration(512, 44100);
+
         OneNoteKeyboard keyboard = new OneNoteKeyboard("foo");
         Adsr adsr = new Adsr("adsr");
-        adsr.setAttackMs(5000);
-        adsr.setDecayMs(5000);
-        adsr.setSustain(Float.MAX_VALUE / 2f);
-        adsr.setReleaseMs(5000);
+        adsr.setAttackMs(1000);
+        adsr.setDecayMs(1000);
+        adsr.setSustain(Float.MAX_VALUE / 4f);
+        adsr.setReleaseMs(1000);
 
         Operator osc1 = new Oscillator("OSC1");
 

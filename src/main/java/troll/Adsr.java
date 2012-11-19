@@ -17,8 +17,8 @@ public class Adsr extends Operator {
     protected Adsr(String name) {
         super(name);
         outputBuffer = new float[0];
-        lastGateStart = -2;
-        lastGateEnd = -1;
+        lastGateStart = -Integer.MAX_VALUE;
+        lastGateEnd = -Integer.MAX_VALUE + 1;
     }
 
     @Override
@@ -34,7 +34,7 @@ public class Adsr extends Operator {
                 lastGateStart = currentSample;
             }
 
-            if (gateValue == 0 && currentSample < lastGateEnd) {
+            if (gateValue == 0 && lastGateStart > lastGateEnd) {
                 lastGateEnd = currentSample;
             }
 

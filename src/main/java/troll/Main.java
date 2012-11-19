@@ -7,24 +7,23 @@ public class Main {
     public static void main(String[] args) throws Exception {
         long currentSample = 0;
         Configuration configuration = new Configuration(512, 44100);
+        OneNoteKeyboard keyboard = new OneNoteKeyboard("foo");
+        Adsr adsr = new Adsr("adsr");
+        adsr.setAttackMs(5000);
+        adsr.setDecayMs(5000);
+        adsr.setSustain(Float.MAX_VALUE / 2f);
+        adsr.setReleaseMs(5000);
 
-        Constant first = new Constant("first", 55);
-        Constant second = new Constant("second", 110);
-        Constant third = new Constant("third", 220);
-        Constant fourth = new Constant("fourth", 440);
+        Operator osc1 = new Oscillator("OSC1");
 
-        Operator osc1 = new Oscillator("OSC1").connect(first, Constant.OUTPUT, Oscillator.FREQUENCY);
-        Operator osc2 = new Oscillator("OSC2").connect(second, Constant.OUTPUT, Oscillator.FREQUENCY);
-        Operator osc3 = new Oscillator("OSC3").connect(third, Constant.OUTPUT, Oscillator.FREQUENCY);
-        Operator osc4 = new Oscillator("OSC4").connect(fourth, Constant.OUTPUT, Oscillator.FREQUENCY);
+        adsr.connect(keyboard, OneNoteKeyboard.GATE, Adsr.GATE);
 
-        Operator dac = new Dac()
-                .connect(osc1, Oscillator.OUTPUT, Dac.INPUT)
-                .connect(osc2, Oscillator.OUTPUT, Dac.INPUT)
-                .connect(osc3, Oscillator.OUTPUT, Dac.INPUT)
-                .connect(osc4, Oscillator.OUTPUT, Dac.INPUT);
+        osc1.connect(keyboard, OneNoteKeyboard.FREQUENCY, Oscillator.FREQUENCY);
+        osc1.connect(adsr, Adsr.OUTPUT, Oscillator.AMPLITUDE);
 
-        for (int i = 0; i < SAMPLE_COUNT; i++) {
+        Operator dac = new Dac().connect(osc1, Oscillator.OUTPUT, Dac.INPUT);
+
+        while (true) {
             dac.execute(configuration, currentSample);
             currentSample += configuration.getSampleSize();
         }

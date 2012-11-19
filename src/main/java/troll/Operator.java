@@ -1,15 +1,11 @@
 package troll;
 
-import clutter.Bag;
-import clutter.SetBag;
-
-import java.util.Collection;
 import java.util.Map;
 import java.util.TreeMap;
 
 public abstract class Operator {
     private Map<String, SlotValue> values;
-    private Bag<String, Connection> inputs;
+    private Map<String, Connection> inputs;
 
     private String name;
     private float[] buffer;
@@ -18,8 +14,9 @@ public abstract class Operator {
     protected Operator(String name) {
         this.name = name;
         values = new TreeMap<String, SlotValue>();
-        inputs = new SetBag<String, Connection>();
+        inputs = new TreeMap<String, Connection>();
         buffer = new float[0];
+        watermark = -1;
     }
 
     public final void refresh(Configuration configuration, long currentSample) {
@@ -44,20 +41,15 @@ public abstract class Operator {
 
     protected final float[] readInput(Configuration configuration, long currentSample, String slotName) {
         normalizeBuffer(configuration);
-        Collection<Connection> inputs = this.inputs.getValues(slotName);
-        if (inputs.size() == 0)
+        Connection input = this.inputs.get(slotName);
+        if (input == null)
             return buffer;
 
-        for (Connection connection : inputs) {
-            connection.source.refresh(configuration, currentSample);
-            float[] result = connection.source.read(configuration, connection.remoteSlot);
-            sum(result);
-        }
-
-        return buffer;
+        input.source.refresh(configuration, currentSample);
+        return input.source.read(configuration, input.remoteSlot);
     }
 
-    private float[] read(Configuration configuration, String slotName) {
+    public float[] read(Configuration configuration, String slotName) {
         normalizeBuffer(configuration);
 
         SlotValue value = values.get(slotName);
@@ -67,18 +59,9 @@ public abstract class Operator {
         return value.data;
     }
 
-    private void sum(float[] buf) {
-        for (int i = 0; i < buf.length; i++) {
-            buffer[i] += buf[i];
-        }
-    }
     private void normalizeBuffer(Configuration configuration) {
         if (buffer.length != configuration.getSampleSize())
             buffer = new float[configuration.getSampleSize()];
-
-        for (int i = 0; i < buffer.length; i++) {
-            buffer[i] = 0;
-        }
     }
 
     public Operator connect(Operator input, String remoteSlot, String localSlot) {

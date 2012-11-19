@@ -8,10 +8,10 @@ public class Main {
         long currentSample = 0;
         Configuration configuration = new Configuration(512, 44100);
 
-        Constant first = new Constant("first", 110);
-        Constant second = new Constant("second", 440);
-        Constant third = new Constant("third", 880);
-        Constant fourth = new Constant("fourth", 1760);
+        Constant first = new Constant("first", 55);
+        Constant second = new Constant("second", 110);
+        Constant third = new Constant("third", 220);
+        Constant fourth = new Constant("fourth", 440);
 
         Operator osc1 = new Oscillator("OSC1").connect(first, Constant.OUTPUT, Oscillator.FREQUENCY);
         Operator osc2 = new Oscillator("OSC2").connect(second, Constant.OUTPUT, Oscillator.FREQUENCY);

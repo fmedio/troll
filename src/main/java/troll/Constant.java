@@ -23,5 +23,7 @@ public class Constant extends Operator {
 
         publish(OUTPUT, buffer);
     }
+
+
 }
 
